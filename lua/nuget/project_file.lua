@@ -1,4 +1,5 @@
 local curl = require("nuget.curl")
+local diagnostics = require("nuget.diagnostics")
 
 local M = {}
 
@@ -32,6 +33,7 @@ function M.load()
     local latest = curl.get_latest(package.name)
     print("Package: " .. package.name .. ", Version: " .. package.version .. ", Latest: " .. latest)
   end
+  diagnostics.test_diagnostic()
 end
 
 function M.update()

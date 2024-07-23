@@ -3,7 +3,7 @@
 **Setup Example (using [lazy.nvim](https://github.com/folke/lazy.nvim))**:
 ```lua
 {
-  dir = 'C:/Users/bernh/Documents/Git/nuget.nvim',
+  'Speiser/nuget.nvim',
   config = function()
     require('nuget').setup()
   end,
