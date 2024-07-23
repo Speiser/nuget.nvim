@@ -3,7 +3,6 @@ local project_file = require("nuget.project_file")
 local M = {}
 
 function M.setup()
-  print("nuget plugin loaded")
   local group = vim.api.nvim_create_augroup("nuget", { clear = true })
   vim.api.nvim_create_autocmd({ "BufRead" }, {
     group = group,

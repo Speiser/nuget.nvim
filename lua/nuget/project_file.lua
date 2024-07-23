@@ -38,6 +38,7 @@ function M.load()
   if not is_csproj() then
     return
   end
+  -- TODO: Make non blocking
   vim.schedule(function()
     local packages = get_packages()
     --- @type vim.Diagnostic[]
@@ -48,6 +49,7 @@ function M.load()
         lnum = package.line_number,
         col = 0,
         message = latest,
+        severity = vim.diagnostic.severity.HINT,
       })
     end
     diagnostics.add_diagnostics(diag)
