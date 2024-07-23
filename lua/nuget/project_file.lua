@@ -13,7 +13,6 @@ end
 --- @field name string
 --- @field version string
 --- @field line_number number
---- @field line_length number
 
 --- @return Package[]
 local function get_packages()
@@ -27,8 +26,7 @@ local function get_packages()
       table.insert(packages, {
         name = name,
         version = version,
-        line_number = line_number,
-        line_length = #line,
+        line_number = line_number - 1,
       })
     end
   end
@@ -40,18 +38,20 @@ function M.load()
   if not is_csproj() then
     return
   end
-  local packages = get_packages()
-  --- @type vim.Diagnostic[]
-  local diag = {}
-  for _, package in ipairs(packages) do
-    local latest = curl.get_latest(package.name)
-    table.insert(diag, {
-      lnum = package.line_number - 1,
-      col = 0,
-      message = latest,
-    })
-  end
-  diagnostics.add_diagnostics(diag)
+  vim.schedule(function()
+    local packages = get_packages()
+    --- @type vim.Diagnostic[]
+    local diag = {}
+    for _, package in ipairs(packages) do
+      local latest = curl.get_latest(package.name)
+      table.insert(diag, {
+        lnum = package.line_number,
+        col = 0,
+        message = latest,
+      })
+    end
+    diagnostics.add_diagnostics(diag)
+  end)
 end
 
 function M.update()
