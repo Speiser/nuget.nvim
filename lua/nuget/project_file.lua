@@ -44,10 +44,6 @@ function M.load()
 
   local function on_json_received(name, line_number, current_version, versions_json)
     -- TODO: Store all versions to cache
-    if versions_json == "" then
-      error("Failed to fetch package data")
-    end
-
     vim.schedule(function()
       -- Decode the JSON result using vim.fn.json_decode
       local success, data = pcall(function()
@@ -55,7 +51,12 @@ function M.load()
       end)
 
       if not success then
-        error("Failed to decode JSON data " .. data)
+        table.insert(packages_with_latest, {
+          line_number = line_number,
+          version = current_version,
+          latest_version = current_version,
+        })
+        return
       end
 
       -- Extract the latest version
