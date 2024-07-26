@@ -1,6 +1,15 @@
 # nuget.nvim
 
-**WIP: Currently only shows latest version as diagnostic in `.csproj` files.**
+> [!IMPORTANT]
+> WORK IN PROGRESS  
+> Current version only shows latest version as diagnostics after opening a `.csproj` file.
+>   
+> Upcoming planned features include
+> - Update all NuGet packages
+> - "Include prerelease" toggle
+> - `nuget.config` support
+> - Autocompletion for package versions while editing `.csproj` files
+> - Manage packages solution-wide (similar to Visual Studio)
 
 ![screenshot](doc/screenshot.png)
 
