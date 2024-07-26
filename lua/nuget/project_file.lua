@@ -40,9 +40,9 @@ function M.load()
   end
 
   local packages = get_packages()
-  local package_diagnostics = {}
+  local packages_with_latest = {}
 
-  local function on_json_received(name, line_number, versions_json)
+  local function on_json_received(name, line_number, current_version, versions_json)
     -- TODO: Store all versions to cache
     if versions_json == "" then
       error("Failed to fetch package data")
@@ -62,12 +62,23 @@ function M.load()
       local versions = data.versions
       local latest_version = versions[#versions]
 
-      table.insert(package_diagnostics, {
+      table.insert(packages_with_latest, {
         line_number = line_number,
+        version = current_version,
         latest_version = latest_version,
       })
 
-      if #package_diagnostics == #packages then
+      if #packages_with_latest == #packages then
+        --- @type PackageDiagnostic[]
+        local package_diagnostics = {}
+        for _, package in ipairs(packages_with_latest) do
+          if package.version ~= package.latest_version then
+            table.insert(package_diagnostics, {
+              line_number = package.line_number,
+              latest_version = package.latest_version,
+            })
+          end
+        end
         diagnostics.add_diagnostics(package_diagnostics)
       end
     end)
@@ -75,7 +86,7 @@ function M.load()
 
   for _, package in ipairs(packages) do
     curl.get_versions_json(package.name, function(versions_json)
-      on_json_received(package.name, package.line_number, versions_json)
+      on_json_received(package.name, package.line_number, package.version, versions_json)
     end)
   end
 end
