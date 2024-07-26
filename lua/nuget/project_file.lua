@@ -38,22 +38,46 @@ function M.load()
   if not is_csproj() then
     return
   end
-  -- TODO: Make non blocking
-  vim.schedule(function()
-    local packages = get_packages()
-    --- @type PackageDiagnostic[]
-    local package_diagnostics = {}
-    for _, package in ipairs(packages) do
-      local latest = curl.get_latest(package.name)
-      if latest ~= package.version then
-        table.insert(package_diagnostics, {
-          line_number = package.line_number,
-          latest_version = latest,
-        })
-      end
+
+  local packages = get_packages()
+  local package_diagnostics = {}
+
+  local function on_json_received(name, line_number, versions_json)
+    -- TODO: Store all versions to cache
+    if versions_json == "" then
+      error("Failed to fetch package data")
     end
-    diagnostics.add_diagnostics(package_diagnostics)
-  end)
+
+    vim.schedule(function()
+      -- Decode the JSON result using vim.fn.json_decode
+      local success, data = pcall(function()
+        return vim.fn.json_decode(versions_json)
+      end)
+
+      if not success then
+        error("Failed to decode JSON data " .. data)
+      end
+
+      -- Extract the latest version
+      local versions = data.versions
+      local latest_version = versions[#versions]
+
+      table.insert(package_diagnostics, {
+        line_number = line_number,
+        latest_version = latest_version,
+      })
+
+      if #package_diagnostics == #packages then
+        diagnostics.add_diagnostics(package_diagnostics)
+      end
+    end)
+  end
+
+  for _, package in ipairs(packages) do
+    curl.get_versions_json(package.name, function(versions_json)
+      on_json_received(package.name, package.line_number, versions_json)
+    end)
+  end
 end
 
 function M.update()
