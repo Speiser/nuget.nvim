@@ -1,5 +1,7 @@
 # nuget.nvim
 
+![screenshot](doc/screenshot.png)
+
 > [!IMPORTANT]
 > WORK IN PROGRESS  
 > Current version only shows latest version as diagnostics after opening a `.csproj` file.
@@ -10,8 +12,6 @@
 > - `nuget.config` support
 > - Autocompletion for package versions while editing `.csproj` files
 > - Manage packages solution-wide (similar to Visual Studio)
-
-![screenshot](doc/screenshot.png)
 
 **Setup Example (using [lazy.nvim](https://github.com/folke/lazy.nvim))**:
 ```lua
