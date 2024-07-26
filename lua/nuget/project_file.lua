@@ -41,18 +41,18 @@ function M.load()
   -- TODO: Make non blocking
   vim.schedule(function()
     local packages = get_packages()
-    --- @type vim.Diagnostic[]
-    local diag = {}
+    --- @type PackageDiagnostic[]
+    local package_diagnostics = {}
     for _, package in ipairs(packages) do
       local latest = curl.get_latest(package.name)
-      table.insert(diag, {
-        lnum = package.line_number,
-        col = 0,
-        message = latest,
-        severity = vim.diagnostic.severity.HINT,
-      })
+      if latest ~= package.version then
+        table.insert(package_diagnostics, {
+          line_number = package.line_number,
+          latest_version = latest,
+        })
+      end
     end
-    diagnostics.add_diagnostics(diag)
+    diagnostics.add_diagnostics(package_diagnostics)
   end)
 end
 
