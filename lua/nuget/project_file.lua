@@ -1,5 +1,6 @@
 local curl = require("nuget.curl")
 local diagnostics = require("nuget.diagnostics")
+local state = require("nuget.state")
 
 local M = {}
 
@@ -9,12 +10,12 @@ local function is_csproj()
   return current_file:sub(-7) == ".csproj"
 end
 
---- @class Package
+--- @class ProjectFilePackageDefinition
 --- @field name string
 --- @field version string
 --- @field line_number number
 
---- @return Package[]
+--- @return ProjectFilePackageDefinition[]
 local function get_packages()
   local packages = {}
   local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
@@ -42,25 +43,8 @@ function M.load()
   local packages = get_packages()
   local packages_with_latest = {}
 
-  local function on_json_received(name, line_number, current_version, versions_json)
-    -- TODO: Store all versions to cache
+  local function on_version_received(line_number, current_version, versions)
     vim.schedule(function()
-      -- Decode the JSON result using vim.fn.json_decode
-      local success, data = pcall(function()
-        return vim.fn.json_decode(versions_json)
-      end)
-
-      if not success then
-        table.insert(packages_with_latest, {
-          line_number = line_number,
-          version = current_version,
-          latest_version = current_version,
-        })
-        return
-      end
-
-      -- Extract the latest version
-      local versions = data.versions
       local latest_version = versions[#versions]
 
       table.insert(packages_with_latest, {
@@ -85,10 +69,39 @@ function M.load()
     end)
   end
 
-  for _, package in ipairs(packages) do
-    curl.get_versions_json(package.name, function(versions_json)
-      on_json_received(package.name, package.line_number, package.version, versions_json)
+  local function on_json_received(name, line_number, current_version, versions_json)
+    vim.schedule(function()
+      local success, data = pcall(function()
+        return vim.fn.json_decode(versions_json)
+      end)
+
+      if not success then
+        table.insert(packages_with_latest, {
+          line_number = line_number,
+          version = current_version,
+          latest_version = current_version,
+        })
+        return
+      end
+
+      local versions = data.versions
+      state.add_package({
+        name = name,
+        versions = versions,
+      })
+      on_version_received(line_number, current_version, versions)
     end)
+  end
+
+  for _, package in ipairs(packages) do
+    local found, versions = state.get_package_versions(package.name)
+    if found then
+      on_version_received(package.line_number, package.version, versions)
+    else
+      curl.get_versions_json(package.name, function(versions_json)
+        on_json_received(package.name, package.line_number, package.version, versions_json)
+      end)
+    end
   end
 end
 
