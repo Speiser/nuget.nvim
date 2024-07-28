@@ -105,11 +105,4 @@ function M.load()
   end
 end
 
-function M.update()
-  if not is_csproj() then
-    return
-  end
-  print("Update")
-end
-
 return M
