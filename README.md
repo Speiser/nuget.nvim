@@ -5,8 +5,10 @@
 
 ## Features
 - [x] Show latest version as diagnostics after opening or updating a `.csproj` file
+- [x] Toggle "Include prerelease" `:ToggleIncludePrerelease`
 - [ ] Update all NuGet packages
-- [ ] "Include prerelease" toggle
+  - [ ] For a single project
+  - [ ] For all projects in a solution
 - [ ] `nuget.config` support
 - [ ] Autocompletion for package versions while editing `.csproj` files
 - [ ] Manage packages solution-wide (similar to Visual Studio)

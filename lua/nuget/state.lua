@@ -7,6 +7,9 @@ local M = {}
 --- @type table<string, Package>
 local cached_packages = {}
 
+--- @type boolean
+M.include_prerelease = true
+
 --- @param package Package
 function M.add_package(package)
   cached_packages[package.name] = package

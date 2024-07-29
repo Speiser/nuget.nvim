@@ -1,5 +1,6 @@
 local curl = require("nuget.curl")
 local diagnostics = require("nuget.diagnostics")
+local helpers = require("nuget.helpers")
 local state = require("nuget.state")
 
 local M = {}
@@ -43,9 +44,10 @@ function M.load()
   local packages = get_packages()
   local packages_with_latest = {}
 
+  --- @param versions string[]
   local function on_version_received(line_number, current_version, versions)
     vim.schedule(function()
-      local latest_version = versions[#versions]
+      local latest_version = helpers.get_latest_version(versions, state.include_prerelease)
 
       table.insert(packages_with_latest, {
         line_number = line_number,
@@ -96,6 +98,7 @@ function M.load()
   for _, package in ipairs(packages) do
     local found, versions = state.get_package_versions(package.name)
     if found then
+      assert(versions ~= nil)
       on_version_received(package.line_number, package.version, versions)
     else
       curl.get_versions_json(package.name, function(versions_json)
