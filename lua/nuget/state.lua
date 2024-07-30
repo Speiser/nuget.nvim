@@ -10,6 +10,12 @@ local cached_packages = {}
 --- @type boolean
 M.include_prerelease = true
 
+--- @type string?
+M.sln_file = nil
+
+--- @type string?
+M.nugetconfig_file = nil
+
 --- @param package Package
 function M.add_package(package)
   cached_packages[package.name] = package
