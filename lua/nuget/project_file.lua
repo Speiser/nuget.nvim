@@ -20,7 +20,7 @@ end
 local function get_packages()
   local packages = {}
   local buffer = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-  local pattern = '<PackageReference Include="(.-)" Version="(.-)" />'
+  local pattern = '<PackageReference Include="(.-)" Version="(.-)"%s*/?>'
 
   for line_number, line in ipairs(buffer) do
     local name, version = line:match(pattern)
