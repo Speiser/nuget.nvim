@@ -1,4 +1,10 @@
+local helpers = require("nuget.helpers")
+
 local M = {}
+
+M.config = {
+  use_nuget_config_file = false,
+}
 
 --- @class Package
 --- @field name string
@@ -15,6 +21,18 @@ M.sln_file = nil
 
 --- @type string?
 M.nugetconfig_file = nil
+
+--- @type string[]
+M.package_info_urls = {}
+
+--- @param package_info_url string
+function M.add_package_info_url(package_info_url)
+  if helpers.contains(M.package_info_urls, package_info_url) then
+    return
+  end
+
+  table.insert(M.package_info_urls, package_info_url)
+end
 
 --- @param package Package
 function M.add_package(package)

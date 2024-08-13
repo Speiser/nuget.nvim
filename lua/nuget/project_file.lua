@@ -41,8 +41,10 @@ function M.load()
     return
   end
 
-  if state.sln_file == nil or state.nugetconfig_file == nil then
-    state.sln_file, state.nugetconfig_file = helpers.find_solution_and_nugetconfig()
+  if state.config.use_nuget_config_file then
+    if state.sln_file == nil or state.nugetconfig_file == nil then
+      state.sln_file, state.nugetconfig_file = helpers.find_solution_and_nugetconfig()
+    end
   end
 
   local packages = get_packages()

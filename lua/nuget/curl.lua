@@ -2,9 +2,9 @@ local Job = require("plenary.job")
 
 local M = {}
 
-function M.get_versions_json(package_id, callback)
-  local url = string.format("https://api.nuget.org/v3-flatcontainer/%s/index.json", package_id:lower())
-
+--- @param url string
+--- @param callback fun(result: string|nil)
+function M.run_curl(url, callback)
   Job:new({
     command = "curl",
     args = { "-s", url },
@@ -19,6 +19,12 @@ function M.get_versions_json(package_id, callback)
       end
     end,
   }):start()
+end
+
+function M.get_versions_json(package_id, callback)
+  local url = string.format("https://api.nuget.org/v3-flatcontainer/%s/index.json", package_id:lower())
+
+  M.run_curl(url, callback)
 end
 
 return M

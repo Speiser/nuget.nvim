@@ -63,4 +63,13 @@ function M.get_latest_version(versions, include_prerelease)
   return versions[#versions]
 end
 
+function M.contains(array, value)
+  for _, v in ipairs(array) do
+    if v == value then
+      return true
+    end
+  end
+  return false
+end
+
 return M
