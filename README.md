@@ -5,7 +5,7 @@
 
 ## Features
 - [x] Show latest version as diagnostics after opening or updating a `.csproj` file
-- [x] Toggle "Include prerelease" `:ToggleIncludePrerelease`
+- [x] Toggle "Include prerelease" `:NugetToggleIncludePrerelease`
 - [ ] Update all NuGet packages
   - [ ] For a single project
   - [ ] For all projects in a solution
